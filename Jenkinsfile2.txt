@@ -1,11 +1,14 @@
-node('maven') {
-stage 'buildInDevelopment'
-openshiftBuild(namespace: 'development', buildConfig: 'myapp', showBuildLogs: 'true')
-stage 'deployInDevelopment'
-openshiftDeploy(namespace: 'development', deploymentConfig: 'myapp')
-openshiftScale(namespace: 'development', deploymentConfig: 'myapp',replicaCount: '2')
-stage 'deployInTesting'
-openshiftTag(namespace: 'development', sourceStream: 'myapp',  sourceTag: 'latest', destinationStream: 'myapp', destinationTag: 'promoteToQA')
-openshiftDeploy(namespace: 'testing', deploymentConfig: 'myapp', )
-openshiftScale(namespace: 'testing', deploymentConfig: 'myapp',replicaCount: '3')
-}
+node {
+    stage('build in development') {
+        openshiftBuild(namespace: 'development', buildConfig: 'nodejs-ex', showBuildLogs: 'true')
+    } // stage
+    stage('deploy in development') {
+        openshiftDeploy(namespace: 'development', deploymentConfig: 'nodejs-ex')
+        openshiftScale(namespace: 'development', deploymentConfig: 'nodejs-ex',replicaCount: '2')
+    } // stage
+    stage('deploy in Testing') {
+        openshiftTag(namespace: 'development', sourceStream: 'nodejs-ex', sourceTag: 'latest', destinationStream: 'nodejs-ex', destinationTag: 'promoteToQA')
+        openshiftDeploy(namespace: 'testing', deploymentConfig: 'nodejs-ex',)
+        openshiftScale(namespace: 'testing', deploymentConfig: 'nodejs-ex', replicaCount: '3')
+    } // stage
+} 
